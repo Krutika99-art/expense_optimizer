@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Expense Optimizer{% endblock %}
+{% block public_nav %}{% endblock %}
+
+{% block content %}
+<section class="container auth-section">
+    <div class="row g-4 align-items-stretch auth-layout">
+        <div class="col-lg-6 col-md-12">
+            <div class="card border-0 info-panel fade-card delay-1 h-100">
+                <h2 class="mb-3">Welcome Back</h2>
+                <p class="mb-4">Access your dashboard and continue managing your finances efficiently.</p>
+
+                <div class="feature-box">Secure Authentication</div>
+                <div class="feature-box">Real-time Financial Overview</div>
+                <div class="feature-box mb-0">Group-based Insights</div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12">
+            <div class="card border-0 shadow-soft p-4 p-md-5 fade-card delay-2 h-100">
+                <h2 class="mb-2">Welcome Back</h2>
+                <p class="text-muted mb-4">Login to continue to your dashboard.</p>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% if form.non_field_errors %}
+                            {{ form.non_field_errors|striptags }}
+                        {% else %}
+                            Invalid username or password. Please try again.
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Email</label>
+                        <input type="email" name="username" autofocus autocapitalize="none" autocomplete="email" maxlength="150" class="form-control" required id="id_username" placeholder="Enter your email">
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" name="password" autocomplete="current-password" class="form-control" minlength="8" required id="id_password">
+                            <button
+                                class="btn btn-outline-secondary js-toggle-password"
+                                type="button"
+                                data-target="id_password"
+                            >Show</button>
+                        </div>
+                        <div class="form-text">Password must be at least 8 characters long.</div>
+                    </div>
+                    <div class="mb-3 text-end">
+                        <a href="{% url 'password_reset' %}" class="small text-decoration-none">Forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </form>
+
+                <p class="mt-4 mb-0 text-center text-muted">
+                    New here? <a href="{% url 'register' %}">Create an account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.js-toggle-password').forEach((button) => {
+    button.addEventListener('click', () => {
+        const input = document.getElementById(button.dataset.target);
+        if (!input) return;
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        button.textContent = show ? 'Hide' : 'Show';
+    });
+});
+</script>
+{% endblock %}

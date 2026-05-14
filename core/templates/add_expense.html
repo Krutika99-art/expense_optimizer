@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Expense | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h4 mb-2">{% if is_edit_mode %}Edit Expense{% else %}Add Expense{% endif %}</h1>
+                    <p class="text-muted mb-4">
+                        {% if is_edit_mode %}
+                            Update an existing expense in your account.
+                        {% else %}
+                            Record an expense under your account.
+                        {% endif %}
+                    </p>
+
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+
+                        {% if is_edit_mode %}
+                            <input type="hidden" name="category" value="{{ form_data.category }}">
+                            <div class="alert alert-light border mb-3">
+                                <span class="text-muted small d-block">Current Category</span>
+                                <strong>{{ expense.category.name }}</strong>
+                                <span class="text-muted">({{ expense.category.get_category_type_display }})</span>
+                            </div>
+                        {% endif %}
+                        {% if not is_edit_mode %}
+                            <div class="mb-3">
+                                <label for="category_name" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="category_name" name="category_name" placeholder="e.g., School Fees" value="{{ form_data.category_name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category_type" class="form-label">Category Type</label>
+                                <select class="form-select" id="category_type" name="category_type" required>
+                                    <option value="">Select category type</option>
+                                    {% for type_item in category_types %}
+                                        <option value="{{ type_item.id }}" {% if form_data.category_type == type_item.id|stringformat:"s" %}selected{% endif %}>{{ type_item.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="amount" name="amount" value="{{ form_data.amount }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expense_date" class="form-label">Expense Date</label>
+                            <input type="date" class="form-control" id="expense_date" name="expense_date" value="{{ form_data.expense_date }}" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description (Optional)</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ form_data.description }}</textarea>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">{% if is_edit_mode %}Update Expense{% else %}Save Expense{% endif %}</button>
+                            <a href="{% url 'expense_history' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

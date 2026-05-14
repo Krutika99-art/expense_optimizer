@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Chatbot | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">AI Finance Chatbot</h1>
+            <p class="text-muted mb-0">Ask questions about spending, savings, budgets, risk, and future predictions.</p>
+        </div>
+        <a href="{% url 'financial_overview' %}" class="btn btn-outline-primary btn-sm">Back to Overview</a>
+    </div>
+
+    <div class="chatbot-shell">
+        <div class="chatbot-hero">
+            <div>
+                <p class="text-uppercase small fw-semibold mb-1">Private Assistant</p>
+                <h2 class="h4 mb-2">Your data-aware finance companion</h2>
+                <p class="mb-0">This chatbot reads your saved financial records and predictive analytics. No external API is required.</p>
+            </div>
+            <span class="chatbot-orb"><i class="bi bi-robot"></i></span>
+        </div>
+
+        <div class="chatbot-messages" id="chatbotMessages" aria-live="polite">
+            <div class="chat-message bot-message">
+                <div class="chat-avatar"><i class="bi bi-stars"></i></div>
+                <div class="chat-bubble">{{ welcome_message }}</div>
+            </div>
+            {% for chat_message in chat_messages %}
+                <div class="chat-message {% if chat_message.role == 'user' %}user-message{% else %}bot-message{% endif %}">
+                    <div class="chat-avatar">
+                        {% if chat_message.role == 'user' %}
+                            <i class="bi bi-person"></i>
+                        {% else %}
+                            <i class="bi bi-stars"></i>
+                        {% endif %}
+                    </div>
+                    <div class="chat-bubble">{{ chat_message.text }}</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="chatbot-suggestions" id="chatbotSuggestions">
+            {% for suggestion in suggestions %}
+                <button type="button" class="btn btn-sm btn-outline-primary chatbot-suggestion">{{ suggestion }}</button>
+            {% endfor %}
+        </div>
+
+        <form class="chatbot-form" id="chatbotForm" method="post" action="{% url 'ai_chatbot' %}" data-reply-url="{% url 'ai_chatbot_reply' %}">
+            {% csrf_token %}
+            <label for="chatbotInput" class="visually-hidden">Ask AI chatbot</label>
+            <input
+                type="text"
+                class="form-control"
+                id="chatbotInput"
+                name="message"
+                placeholder="Ask: Predict my next month, am I over budget, what is my biggest expense..."
+                autocomplete="off"
+            >
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-send"></i>
+                Send
+            </button>
+        </form>
+    </div>
+</section>
+{% endblock %}

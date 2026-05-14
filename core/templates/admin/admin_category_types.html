@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Category Types | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="admin-management-page">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm admin-management-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            <h1 class="h4 mb-1">Manage Category Types</h1>
+                            <p class="text-muted mb-0">Add new type options for categories without changing code.</p>
+                        </div>
+                        <span class="badge text-bg-primary">{{ total_category_types }} Total</span>
+                    </div>
+
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-12">
+                            <label for="name" class="form-label">Type Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="name"
+                                name="name"
+                                value="{{ form_data.name }}"
+                                placeholder="e.g., Investments"
+                            >
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Add Type</button>
+                            <a href="{% url 'admin_categories' %}" class="btn btn-outline-primary">Manage Categories</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm admin-management-card">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h2 class="h4 mb-1">Category Type List</h2>
+                            <p class="text-muted mb-0">Types in use by categories are protected from deletion.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 admin-management-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type Name</th>
+                                    <th>Categories</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category_type in category_types %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ category_type.name }}</td>
+                                        <td>{{ category_type.category_count }}</td>
+                                        <td>
+                                            {% if category_type.category_count > 0 %}
+                                                <span class="badge text-bg-warning">In Use</span>
+                                            {% else %}
+                                                <span class="badge text-bg-success">Available</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex gap-2">
+                                                <a href="{% url 'edit_category_type' category_type.id %}" class="btn btn-outline-primary btn-sm">
+                                                    Edit
+                                                </a>
+                                                <form method="post" action="{% url 'delete_category_type' category_type.id %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="next" value="{% url 'admin_category_types' %}">
+                                                    <button
+                                                        type="submit"
+                                                        class="btn btn-danger btn-sm"
+                                                        {% if category_type.category_count > 0 %}disabled{% endif %}
+                                                        onclick="return confirm('Delete this category type?');"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-muted">No category types found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

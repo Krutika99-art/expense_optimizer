@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Expense History | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Expense History</h1>
+            <p class="text-muted mb-0">Review, filter, edit, and remove expense entries.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'financial_overview' %}" class="btn btn-outline-primary btn-sm">Back to Overview</a>
+            <a href="{% url 'add_expense' %}" class="btn btn-primary btn-sm">Add Expense</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Category</label>
+                    <select class="form-select" id="category" name="category">
+                        <option value="">All categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if filter_data.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                {{ category.name }} ({{ category.get_category_type_display }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="start_date" class="form-label">From date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ filter_data.start_date }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="end_date" class="form-label">To date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ filter_data.end_date }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="min_amount" class="form-label">Min amount</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="min_amount" name="min_amount" value="{{ filter_data.min_amount }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="max_amount" class="form-label">Max amount</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="max_amount" name="max_amount" value="{{ filter_data.max_amount }}">
+                </div>
+                <div class="col-md-6 d-flex align-items-end gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'expense_history' %}" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Filtered Expenses</p>
+                    <h2 class="h5 mb-0">{{ filtered_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Filtered Total</p>
+                    <h2 class="h5 mb-0">{{ filtered_total }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {% if expenses %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in expenses %}
+                                <tr>
+                                    <td>{{ expense.expense_date|date:"d M Y" }}</td>
+                                    <td>{{ expense.category.name }}</td>
+                                    <td>{{ expense.amount }}</td>
+                                    <td>{{ expense.description|default:"-" }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-end gap-2 flex-wrap">
+                                            <a href="{% url 'edit_expense' expense.id %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                            <form method="post" action="{% url 'delete_expense' expense.id %}" onsubmit="return confirm('Delete this expense?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">No expenses match the current filters.</div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

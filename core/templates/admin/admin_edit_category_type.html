@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Category Type | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="admin-management-page">
+    <div class="card border-0 shadow-sm admin-management-card">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <div>
+                    <h1 class="h4 mb-1">Edit Category Type</h1>
+                    <p class="text-muted mb-0">Rename a reusable category type for future and existing categories.</p>
+                </div>
+                <a href="{% url 'admin_category_types' %}" class="btn btn-outline-primary">Back to Category Types</a>
+            </div>
+
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Type Name</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        name="name"
+                        value="{{ form_data.name }}"
+                        placeholder="e.g., Investments"
+                    >
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'admin_category_types' %}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

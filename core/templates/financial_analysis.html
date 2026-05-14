@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}Category Analysis | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Category-Based Spending Analysis</h1>
+            <p class="text-muted mb-0">User Account Analysis</p>
+        </div>
+        <a href="{% url 'financial_overview' %}" class="btn btn-outline-primary btn-sm">Back to Financial Dashboard</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100" id="expense-breakdown">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Total Expense</p>
+                    <h2 class="h5 mb-0">{{ total_expense }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Top Spending Category</p>
+                    {% if top_category %}
+                        <h2 class="h6 mb-0">{{ top_category }} <span class="badge text-bg-success">Top</span></h2>
+                    {% else %}
+                        <h2 class="h6 mb-0 text-muted">No data</h2>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <p class="text-muted small mb-1">Top Budget Category</p>
+                    {% if top_budget_category %}
+                        <h2 class="h6 mb-0">{{ top_budget_category }} <span class="badge text-bg-primary">Budget</span></h2>
+                    {% else %}
+                        <h2 class="h6 mb-0 text-muted">No data</h2>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="h6 mb-3">Expense by Category</h3>
+            {% if expense_breakdown %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Expense</th>
+                                <th>% Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in expense_breakdown %}
+                                <tr>
+                                    <td>{{ row.category }}</td>
+                                    <td>{{ row.amount }}</td>
+                                    <td>{{ row.percent }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">No expense data available for analysis.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4" id="budget-breakdown">
+        <div class="card-body">
+            <h3 class="h6 mb-3">Budget by Category</h3>
+            {% if budget_breakdown %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>% Distribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in budget_breakdown %}
+                                <tr>
+                                    <td>{{ row.category }}</td>
+                                    <td>{{ row.amount }}</td>
+                                    <td>{{ row.percent }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">No budget data available for analysis.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h3 class="h6 mb-3">Budget vs Expense by Category</h3>
+            {% if analysis_table %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>Expense</th>
+                                <th>% Distribution</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in analysis_table %}
+                                <tr>
+                                    <td>{{ row.category }}</td>
+                                    <td>{{ row.budget }}</td>
+                                    <td>{{ row.expense }}</td>
+                                    <td>{{ row.percent }}%</td>
+                                    <td>
+                                        {% if row.status == "Over Budget" %}
+                                            <span class="badge text-bg-danger">Over Budget</span>
+                                        {% else %}
+                                            <span class="badge text-bg-success">Safe</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info mb-0">No expense or budget data available for analysis.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h3 class="h6 mb-3">Category Charts</h3>
+            {% if analysis_table %}
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="mx-auto" style="max-width: 260px;">
+                            <canvas id="categoryPieChart" height="120"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div style="height: 260px;">
+                            <canvas id="categoryBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Chart unavailable until expenses are added.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4 predictive-card">
+        <div class="card-body">
+            <p class="text-uppercase small fw-semibold text-primary mb-1">Predictive Analytics</p>
+            <h3 class="h6 mb-2">Next 3 months forecast</h3>
+            <p class="text-muted mb-3">{{ predictive_analytics.summary }}</p>
+            <div class="row g-3">
+                {% for row in predictive_analytics.forecast_rows %}
+                    <div class="col-md-4">
+                        <div class="prediction-tile prediction-tile-{{ row.risk_color }}">
+                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                <h4 class="h6 mb-2">{{ row.month }}</h4>
+                                <span class="badge text-bg-{{ row.risk_color }}">{{ row.risk_level }}</span>
+                            </div>
+                            <p class="small mb-1">Expense: {{ row.expense }}</p>
+                            <p class="small mb-1">Income: {{ row.income }}</p>
+                            <p class="small mb-0">Savings: {{ row.savings }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-body">
+            <h4 class="h6 mb-3">Optimization Suggestions</h4>
+            {% if suggestions %}
+                <ul class="mb-0">
+                    {% for s in suggestions %}
+                        <li>{{ s }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="mb-0">No optimization issues detected.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ chart_labels|json_script:"analysis-chart-labels" }}
+{{ chart_values|json_script:"analysis-chart-values" }}
+{{ budget_chart_labels|json_script:"analysis-budget-chart-labels" }}
+{{ budget_chart_values|json_script:"analysis-budget-chart-values" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = JSON.parse(document.getElementById('analysis-chart-labels').textContent);
+const values = JSON.parse(document.getElementById('analysis-chart-values').textContent);
+const budgetLabels = JSON.parse(document.getElementById('analysis-budget-chart-labels').textContent);
+const budgetValues = JSON.parse(document.getElementById('analysis-budget-chart-values').textContent);
+
+const ctx = document.getElementById('categoryPieChart');
+if (ctx && labels.length > 0) {
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    '#0d6efd', '#20c997', '#ffc107', '#dc3545', '#6f42c1',
+                    '#0dcaf0', '#fd7e14', '#198754', '#6c757d', '#6610f2'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+const barCtx = document.getElementById('categoryBarChart');
+if (barCtx && labels.length > 0) {
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Category Expense',
+                data: values,
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderColor: '#0d6efd',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

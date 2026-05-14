@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Categories | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="admin-management-page">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm admin-management-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                        <div>
+                            <h1 class="h4 mb-1">Manage Categories</h1>
+                            <p class="text-muted mb-0">Create and maintain system-wide expense categories.</p>
+                        </div>
+                        <span class="badge text-bg-primary">{{ total_categories }} Total</span>
+                    </div>
+
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-12">
+                            <label for="name" class="form-label">Category Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="name"
+                                name="name"
+                                value="{{ form_data.name }}"
+                                placeholder="e.g., School Fees"
+                            >
+                        </div>
+                        <div class="col-12">
+                            <label for="category_type" class="form-label">Category Type</label>
+                            <select class="form-select" id="category_type" name="category_type">
+                                <option value="">Select category type</option>
+                                {% for type_item in category_types %}
+                                    <option value="{{ type_item.id }}" {% if form_data.category_type == type_item.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ type_item.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Add Category</button>
+                            <a href="{% url 'admin_category_types' %}" class="btn btn-outline-secondary">Manage Types</a>
+                            <a href="{% url 'admin_analytics' %}" class="btn btn-outline-primary">Back to Dashboard</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm admin-management-card">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                        <div>
+                            <h2 class="h4 mb-1">Category List</h2>
+                            <p class="text-muted mb-0">Delete only categories that are not used in budgets or expenses.</p>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 admin-management-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Expenses</th>
+                                    <th>Budgets</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for category in categories %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ category.name }}</td>
+                                        <td>{{ category.get_category_type_display }}</td>
+                                        <td>{{ category.expense_count }}</td>
+                                        <td>{{ category.budget_count }}</td>
+                                        <td>
+                                            {% if category.usage_count > 0 %}
+                                                <span class="badge text-bg-warning">In Use</span>
+                                            {% else %}
+                                                <span class="badge text-bg-success">Available</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex gap-2">
+                                            <a href="{% url 'edit_category' category.id %}" class="btn btn-outline-primary btn-sm">
+                                                Edit
+                                            </a>
+                                            <form method="post" action="{% url 'delete_category' category.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="next" value="{% url 'admin_categories' %}">
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                    {% if category.usage_count > 0 %}disabled{% endif %}
+                                                    onclick="return confirm('Delete this category?');"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-muted">No categories found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

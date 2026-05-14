@@ -1,0 +1,206 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Optimizer | Smarter Budgeting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/landingpage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="auth-page landing-page">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+
+    <div class="page-shell">
+        <header class="site-header">
+            <nav class="navbar navbar-expand-lg navbar-light px-4">
+                <div class="container-fluid">
+                    <a class="navbar-brand fw-bold brand-mark" href="/">Expense Optimizer</a>
+                </div>
+            </nav>
+        </header>
+
+        <main class="auth-main">
+            <div class="container">
+                <section class="landing-hero">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-lg-7 hero-content">
+                            <p class="eyebrow">Smart Finance</p>
+                            <h1>Track expenses, plan budgets, and stay in control.</h1>
+                            <p class="intro-subtext">
+                                Expense Optimizer helps individuals manage daily spending with clear
+                                summaries, category tracking, and practical financial insights.
+                            </p>
+                            <div class="hero-actions">
+                                <a class="btn btn-primary px-4" href="#get-started">Get Started</a>
+                                <a class="btn btn-outline-light px-4" href="{% url 'register' %}">Create Account</a>
+                                <a class="btn btn-outline-light px-4" href="{% url 'login' %}">Login</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="hero-card">
+                                <p class="stat-label">Clarity for every account</p>
+                                <h2>Budgeting made consistent.</h2>
+                                <p class="intro-subtext">
+                                    Keep expenses, budgets, income, and trends aligned in one personal finance view.
+                                </p>
+                                <div class="hero-stat-grid">
+                                    <div>
+                                        <span>Built for</span>
+                                        <strong>Teams</strong>
+                                    </div>
+                                    <div>
+                                        <span>Focus</span>
+                                        <strong>Accountability</strong>
+                                    </div>
+                                    <div>
+                                        <span>Average setup</span>
+                                        <strong>Under 5 min</strong>
+                                    </div>
+                                    <div>
+                                        <span>Workflow</span>
+                                        <strong>Simple + Fast</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="landing-stats">
+                    <div class="stat-item">
+                        <h3>Role-based</h3>
+                        <p>Admin, Member, and Viewer access levels.</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Account-first</h3>
+                        <p>Track personal income, expenses, and category budgets.</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>Actionable</h3>
+                        <p>See recent expenses and totals instantly.</p>
+                    </div>
+                </section>
+
+                <section class="landing-features">
+                    <div class="section-header">
+                        <p class="eyebrow">Core Features</p>
+                        <h2>Everything you need to manage daily spending.</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h4>Fast Entry</h4>
+                                <p>Capture expenses in seconds with clean forms and smart defaults.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h4>Budget Planning</h4>
+                                <p>Set monthly caps by category and track progress toward goals.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-card">
+                                <h4>Clear Dashboards</h4>
+                                <p>Visual summaries help you understand spending at a glance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="get-started" class="landing-workflow">
+                    <div class="section-header">
+                        <p class="eyebrow">How It Works</p>
+                        <h2>Start tracking in three clear steps.</h2>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="workflow-card">
+                                <span class="card-icon" aria-hidden="true"><i class="bi bi-person-plus-fill"></i></span>
+                                <span class="step-tag">Step 1</span>
+                                <h4>Create your account</h4>
+                                <p>Register and choose the role that matches how you collaborate.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="workflow-card">
+                                <span class="card-icon" aria-hidden="true"><i class="bi bi-receipt-cutoff"></i></span>
+                                <span class="step-tag">Step 2</span>
+                                <h4>Add expenses and categories</h4>
+                                <p>Log expenses quickly and keep records organized by purpose.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="workflow-card">
+                                <span class="card-icon" aria-hidden="true"><i class="bi bi-graph-up-arrow"></i></span>
+                                <span class="step-tag">Step 3</span>
+                                <h4>Review trends and adjust</h4>
+                                <p>Use dashboard totals to improve decisions and stay on budget.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="landing-usecases">
+                    <div class="section-header">
+                        <p class="eyebrow">Use Cases</p>
+                        <h2>Flexible enough for everyday personal finance tracking.</h2>
+                    </div>
+                    <div class="usecase-grid">
+                        <article class="usecase-card">
+                            <span class="card-icon" aria-hidden="true"><i class="bi bi-wallet2"></i></span>
+                            <h4>Personal Budget</h4>
+                            <p>Track subscriptions, groceries, and daily spending in one place.</p>
+                        </article>
+                        <article class="usecase-card">
+                            <span class="card-icon" aria-hidden="true"><i class="bi bi-people-fill"></i></span>
+                            <h4>Household Tracking</h4>
+                            <p>Track shared household costs from one account and monitor category totals.</p>
+                        </article>
+                        <article class="usecase-card">
+                            <span class="card-icon" aria-hidden="true"><i class="bi bi-briefcase-fill"></i></span>
+                            <h4>Freelance Work</h4>
+                            <p>Separate work-related spending from personal categories and review trends clearly.</p>
+                        </article>
+                        <article class="usecase-card">
+                            <span class="card-icon" aria-hidden="true"><i class="bi bi-airplane-fill"></i></span>
+                            <h4>Travel Budget</h4>
+                            <p>Track trip-related categories without losing visibility of your overall budget.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="landing-cta">
+                    <div class="cta-card">
+                        <div>
+                            <h2>Ready to take control of your spending?</h2>
+                            <p>Start tracking today and build better budget habits.</p>
+                        </div>
+                        <div class="cta-actions">
+                            <a class="btn btn-primary px-4" href="{% url 'register' %}">Create Account</a>
+                            <a class="btn btn-outline-light px-4" href="{% url 'login' %}">Login</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <p class="mb-0">Expense Optimizer keeps your budget clear and on track.</p>
+                <p id="year" class="mb-0"></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

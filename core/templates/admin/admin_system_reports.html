@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}System Reports | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5 admin-reports-page">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h3 mb-1">System Reports</h1>
+            <p class="text-muted mb-0">Preview the platform summary before exporting the latest admin report.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'export_admin_analytics_csv' %}" class="btn btn-outline-success">Export CSV</a>
+            <a href="{% url 'export_admin_analytics_pdf' %}" class="btn btn-dark">Download PDF</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card metric-card-users h-100">
+                <div class="metric-icon"><i class="bi bi-people-fill"></i></div>
+                <div>
+                    <p class="metric-label">Managed Accounts</p>
+                    <h2 class="metric-value">{{ total_accounts }}</h2>
+                    <p class="metric-note">Included in this report</p>
+                </div>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card metric-card-income h-100">
+                <div class="metric-icon"><i class="bi bi-cash-coin"></i></div>
+                <div>
+                    <p class="metric-label">Total Income</p>
+                    <h2 class="metric-value">Rs {{ total_income }}</h2>
+                    <p class="metric-note">Across all user accounts</p>
+                </div>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card metric-card-expense h-100">
+                <div class="metric-icon"><i class="bi bi-wallet2"></i></div>
+                <div>
+                    <p class="metric-label">Total Expense</p>
+                    <h2 class="metric-value">Rs {{ total_expense }}</h2>
+                    <p class="metric-note">Used in analytics exports</p>
+                </div>
+            </article>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <article class="metric-card metric-card-foi h-100">
+                <div class="metric-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <div>
+                    <p class="metric-label">Average FOI</p>
+                    <h2 class="metric-value">{{ average_foi }}%</h2>
+                    <p class="metric-note">Report generated on {{ generated_date }}</p>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h2 class="h5 mb-1">User-wise Financial Summary</h2>
+                            <p class="text-muted small mb-0">Top accounts by total expense.</p>
+                        </div>
+                        <span class="badge text-bg-light">Preview</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Income</th>
+                                    <th>Expense</th>
+                                    <th>Budget</th>
+                                    <th>FOI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in user_metrics|dictsortreversed:"total_expense"|slice:":8" %}
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">{{ item.username }}</div>
+                                            <div class="small text-muted">{{ item.email|default:"-" }}</div>
+                                        </td>
+                                        <td>Rs {{ item.total_income }}</td>
+                                        <td>Rs {{ item.total_expense }}</td>
+                                        <td>Rs {{ item.total_budget }}</td>
+                                        <td>{{ item.foi }}%</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-muted">No report data is available yet.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">Report Highlights</h2>
+                    <div class="report-highlight-list">
+                        <div class="report-highlight-item">
+                            <span class="report-highlight-label">Highest Risk Account</span>
+                            <strong>{{ highest_risk_account.username|default:"-" }}</strong>
+                            <span class="text-muted small">
+                                {% if highest_risk_account %}
+                                    {{ highest_risk_account.risk_level }} with score {{ highest_risk_account.risk_score }}
+                                {% else %}
+                                    No risk activity yet.
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="report-highlight-item">
+                            <span class="report-highlight-label">High Risk Count</span>
+                            <strong>{{ high_risk_accounts_count }}</strong>
+                            <span class="text-muted small">Accounts currently needing attention.</span>
+                        </div>
+                        <div class="report-highlight-item">
+                            <span class="report-highlight-label">Top Spending Category</span>
+                            <strong>{{ most_common_category.category__name|default:"Uncategorized" }}</strong>
+                            <span class="text-muted small">
+                                {% if most_common_category %}
+                                    {{ most_common_category.expense_count }} recorded expense entries
+                                {% else %}
+                                    No spending data yet.
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="report-highlight-item">
+                            <span class="report-highlight-label">Export Options</span>
+                            <strong>CSV and PDF</strong>
+                            <span class="text-muted small">Both downloads include the same reporting snapshot.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0">High Risk Accounts</h2>
+                        <span class="text-muted small">Top 5</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Risk Level</th>
+                                    <th>FOI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in top_risk_accounts %}
+                                    <tr>
+                                        <td>{{ item.username }}</td>
+                                        <td>{{ item.risk_level }}</td>
+                                        <td>{{ item.foi }}%</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-muted">No risk records available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0">Top Spending Categories</h2>
+                        <span class="text-muted small">Top 5</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Total Expense</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in top_categories %}
+                                    <tr>
+                                        <td>{{ item.category__name|default:"Uncategorized" }}</td>
+                                        <td>Rs {{ item.total }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-muted">No category totals available.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

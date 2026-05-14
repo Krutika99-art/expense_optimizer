@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Snapshot | Expense Optimizer{% endblock %}
+
+{% block content %}
+<section class="container pb-4 pb-md-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h3 mb-1">Account Summary</h1>
+            <p class="text-muted mb-0">FOI snapshot for your user account.</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-primary btn-sm">Back to Dashboard</a>
+    </div>
+
+    {% if account_metrics %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Account</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">FOI</th>
+                                <th scope="col">Savings</th>
+                                <th scope="col">Utilization</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for account in account_metrics %}
+                                <tr>
+                                    <td>
+                                        <span class="fw-semibold">{{ account.account_name }}</span>
+                                        {% if best_account and account.account_id == best_account.account_id %}
+                                            <span class="badge bg-success ms-2">Top</span>
+                                        {% endif %}
+                                        {% if lowest_account and account.account_id == lowest_account.account_id %}
+                                            <span class="badge bg-danger ms-2">Low</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ account.account_type }}</td>
+                                    <td>{{ account.FOI|floatformat:2 }}%</td>
+                                    <td>{{ account.savings|floatformat:2 }}</td>
+                                    <td>{{ account.utilization|floatformat:2 }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">FOI Comparison Chart</h2>
+                <div class="position-relative" style="height: 360px;">
+                    <canvas id="foiComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info mb-0">
+            No account metrics found yet.
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ account_metrics|json_script:"account-metrics-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const accountMetrics = JSON.parse(document.getElementById('account-metrics-data').textContent);
+    const accountLabels = accountMetrics.map((account) => account.account_name);
+    const foiScores = accountMetrics.map((account) => Number.parseFloat(account.FOI));
+
+    const canvas = document.getElementById('foiComparisonChart');
+    if (canvas && accountLabels.length > 0) {
+        new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: accountLabels,
+                datasets: [
+                    {
+                        label: 'FOI Score',
+                        data: foiScores,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'FOI Score'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Accounts'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
