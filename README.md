@@ -156,24 +156,3 @@ Open the app at `http://127.0.0.1:8000/`.
 ## Reporting
 
 The app supports downloadable reports through Django views and includes Power BI reporting through `ExpenseOptimizerApplication.pbix`. Connect the Power BI report to the same MySQL database to visualize the current finance data.
-
-## Security Notes
-
-- Do not commit `.env` or real credentials.
-- `DJANGO_SECRET_KEY` and database credentials are read from environment variables.
-- Keep `DJANGO_DEBUG=False` in production.
-- Set `DJANGO_ALLOWED_HOSTS` to your production domain names before deployment.
-
-## GitHub Setup
-
-After creating a GitHub repository, connect this local project and push:
-
-```bash
-git remote add origin https://github.com/<your-username>/<your-repository>.git
-git branch -M main
-git push -u origin main
-```
-
-## License
-
-Add a license before publishing if this project will be shared publicly.
